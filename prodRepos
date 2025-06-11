@@ -1,0 +1,499 @@
+public async Task<Product> AddAsync(Product product)
+{
+var prod =context.Products.FirstOrDefault(x => x. ProductName product.ProductName);
+
+if(prod == null)
+{
+await context.Products.AddAsync(product);
+await context.SaveChangesAsync();
+return product;
+//if need to return newly add category
+}
+else
+{
+return prod;
+}
+}
+
+public async Task<IEnumerable<Product>> GetPagewiseProducts(int pageNumber, int pageSize)
+{
+var data = await context.Products
+.OrderBy(p => p.ProductId)
+.Skip((pageNumber 1) pageSize)
+.Take(pageSize)
+.ToListAsync();
+return data;
+}
+
+public async Task<IEnumerable<Product>> GetAllAsync()
+{
+try
+{
+return await context.Products.AslloTracking().ToListAsync();
+}
+catch (System.Exception)
+{
+return null;
+}
+}
+
+{
+
+public async Task<Product> GetByIdAsync(int productId)
+{
+//if(productId is int)
+{
+try
+{
+return await context.Products.AsNoTracking().FirstOrDefaultAsync(p-> p.ProductId productId);
+}
+catch (System.Exception)
+{
+return null;
+}
+}
+}
+
+public async Task<Product> GetByNameAsync(string productName)
+{
+try
+{
+return await context.Products.AsNoTracking().FirstOrDefaultAsync(c-> c. ProductName -- productName);
+}
+catch (System.Exception)
+{
+return null;
+}
+}
+
+public async Task<Product> GetByCategoryNameAsync(string categoryName)
+{
+try
+{
+//var catId context.Categories.FirstOrDefault(c => c.CategoryName - categoryName);
+//return await context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.CategoryId= Convert.ToByte(catId)); return await context.Products.AsNoTracking().where(c-> c.Category.CategoryName = categoryName).FirstOrDefaultAsync();
+}
+catch (System.Exception)
+{
+return null;
+}
+}
+
+public async Task<Product> UpdateAsync(Product product)
+{
+try
+{
+context.Products. Update (product);
+await context.SaveChangesAsync();
+return product;   // if updated category need s to display
+}
+catch (System.Exception)
+{
+throw;
+}
+}
+
+public async Task<bool> DeleteAsync(int productId)
+{
+try
+{
+var product = await context.Products.FindAsync(productId); if(product null)
+{
+return false;
+}
+context.Products.Remove(product);
+await context.SaveChangesAsync();
+return true;
+}
+catch (System.Exception)
+{
+throw;
+}
+}
+
+// Controller//
+
+[HttpPost("AddProduct")] 
+public async Task<IActionResult> AddAsync([FromBody] CreateProductCommand command)
+{
+var result = await mediator.Send(command); return Ok(result);
+}
+
+[HttpGet("PagewiseProduct")]
+public async Task<IActionResult> GetPagewiseProducts (int pageNumber, int pageSize)
+{
+var result = await mediator.Send(new GetPagewiseProducts Query (pageNumber, pageSize)); return Ok(result);
+}
+
+[HttpGet("ProductList")]
+public async Task<IActionResult> GetAllAsync()
+{
+var result = await mediator.Send(new GetAllProductsQuery());
+return Ok(result);
+}
+
+[HttpGet("ProductById")]
+public async Task<IActionResult> GetByIdAsync(int productId)
+{
+var result = await mediator.Send(new GetProductByIdQuery(productId)); 
+return Ok(result);
+}
+
+[HttpGet("ProductByName")]
+public async Task<IActionResult> GetByNameAsync(string productName)
+{
+var result = await mediator.Send(new GetProductByNameQuery(productName));
+return Ok(result);
+}
+
+[HttpGet("ProductByCategory")
+public async Task<IActionResult> GetByCategoryNameAsync(string categoryName)
+{
+var result = await mediator.Send(new GetProductByCategoryQuery(categoryName)); return Ok(result);
+}
+
+[HttpPut("UpdateProduct")
+public async Task<IActionResult> UpdateAsync([FromBody] UpdateProductCommand command)
+{
+var result = await mediator.Send(command); if(result = null)
+return NotFound(new {message "Product Not Found."});
+return Ok(result);
+}
+
+[HttpDelete("RemoveProduct")]
+public async Task<IActionResult> DeleteAsync(int productId)
+{
+var result = await mediator.Send(new DeleteProductCommand(productId));
+if(!result)
+return NotFound(new (message "Category Not Found."});
+//return NoContent();
+return Ok(new {message "Category Deleted Successfully."});
+}
+
+
+// CatRepos
+
+public async Task<Category> AddAsync (Category category)
+{
+var cat = context.Categories.FirstOrDefault(c => c.CategoryName category.CategoryName);
+if(cat == null)
+{
+await context.Categories.AddAsync(category);
+await context.SaveChangesAsync();
+return category; //if need to return newly add category
+}
+else
+{
+return cat;
+}
+}
+
+public async Task<IEnumerable<Category>> GetPagewiseCategories(int pageNumber, int pageSize)
+{
+var data = await context.Categories
+OrderBy(d=> d.CategoryId)
+.Skip((pageNumber - 1) * pageSize)
+.Take(pageSize)
+.ToListAsync();
+return data;
+}
+
+public async Task<IEnumerable<Category>> GetAllAsync()
+{
+try
+{
+return await context.Categories.AsNoTracking().ToListAsync();
+}
+catch (System.Exception)
+{
+return null;
+}
+}
+
+public async Task<Category> GetByIdAsync(int categoryId)
+{
+//if(categoryId is int)
+{
+try
+{
+return await context.Categories.AsNoTracking().FirstOrDefaultAsync(c=> c.CategoryId = categoryId);
+}
+catch (System.Exception)
+{
+return null;
+}
+}
+}
+
+public async Task<Category> GetByNameAsync(string categoryName)
+{
+try
+{
+return await context.Categories.AsNoTracking().FirstOrDefaultAsync(c=> c.CategoryName = categoryName);
+}
+catch (System.Exception)
+{
+return null;
+}
+}
+
+public async Task<Category> UpdateAsync(Category category)
+{
+try
+{
+context.Categories. Update(category);
+await context.SaveChangesAsync();
+return category;
+// if updated category need s to display
+}
+catch (System.Exception)
+{
+throw;
+}
+}
+
+} public async Task<bool> DeleteAsync(byte categoryId)
+{
+try
+{
+var category = await context.Categories.FindAsync(categoryId);
+if(category == null)
+{
+return false;
+}
+context.Categories.Remove(category);
+await context.SaveChangesAsync();
+return true;
+}
+catch (System.Exception)
+{
+throw;
+}
+}
+
+
+// Cat controller //
+
+[HttpPost("AddCategory")]
+public async Task<IActionResult> AddAsync([FromBody] CreateCategoryCommand command)
+{
+var categoryAdded = await mediator.Send(command);
+return Ok(category Added);
+}
+
+[HttpGet("GetPagedData")]
+public async Task<IActionResult> GetPagewiseCategories (int pageNo = 1, int pageSize = 3)
+{
+var categories = await mediator.Send(new GetPagewiseCategories Query(pageNo, pageSize)); return Ok(categories);
+}
+
+[Authorize (Roles = "Admin")] [HttpGet("ListCategories")]
+public async Task<IActionResult> GetAllAsync()
+{
+var categories = await mediator.Send(new GetAllCategoriesQuery());
+return Ok(categories);
+}
+
+[HttpGet("GetById/{categoryId}")]
+public async Task<IActionResult> GetByIdAsync(byte categoryId)
+{
+var category = await mediator.Send(new GetCategoryByIdQuery(categoryId));
+if(category= null)
+return NotFound($"Category with CategoryId (categoryId) not found.");
+return Ok(category);
+}
+
+[HttpGet("GetByName/{categoryName}")]
+public async Task<IActionResult> GetByNameAsync(string categoryName)
+{
+var category = await mediator.Send(new GetCategoryByNameQuery(categoryName));
+if(category== null)
+return NotFound($"Category with CategoryName (categoryName} not found.");
+return Ok(category);
+}
+
+[HttpPut("UpdateCategory")]
+public async Task<IActionResult> UpdateAsync([FromBody] UpdateCategoryCommand command)
+{
+var categoryUpdated = await mediator.Send(command);
+if(categoryUpdated == null)
+return NotFound(new {message "Category Not Found."});
+return Ok(categoryUpdated);
+}
+
+[HttpDelete("Remove/{categoryId}")]
+public async Task<IActionResult> DeleteAsync(byte categoryId)
+{
+var result = await mediator.Send(new DeleteCategoryCommand(categoryId));
+if(!result)
+return NotFound(new {message "Category Not Found."});
+//return NoContent();
+return Ok(new {message = "Category Deleted Successfully."});
+}
+
+
+// appsettings.json//
+
+"JwtSettings": {
+"Issuer":"MyAuthServer",
+"Audience": "MyAuthClient",
+"Key":"ThisIsKeyForJwtTokenItShouldBe32Letters",
+"DurationInMinutes":60
+}
+
+
+// JwtSettings//
+
+public class JwtSettings
+{
+public string Issuer { get; set; }
+public string Audience { get; set; 
+public string Key { get; set; }
+public int DurationInMinutes { get; set; }
+}
+
+// program.cs //
+
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+var jwtSettings =  builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+
+builder.Services.AddAuthentication(options =>
+{
+options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme; options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+options.TokenValidationParameters = new TokenValidationParameters
+{
+ValidateIssuer = true,
+ValidateAudience = true,
+ValidateLifetime = true, ValidateIssuerSigningKey =true,
+ValidIssuer = jwtSettings.Issuer,
+ValidAudience =jwtSettings.Audience,
+IssuerSigningkey = new SymmetricSecurityKey (Encoding.UTF8.GetBytes(jwtSettings.Key))
+};
+});
+
+// JwtTokenGenerator //
+
+public class JwtTokenGenerator
+{
+private readonly JwtSettings jwtSettnigs;
+public JwtTokenGenerator (IOptions<JwtSettings> _jwtSettnigs)
+{
+jwtSettnigs_jwtSettnigs.Value;
+
+public string GenerateToken(string username, string role)
+{
+var claims = new[]
+{ 
+new Claim(JwtRegisteredClaimNames.Sub, username),
+new Claim(ClaimTypes. Role, role),
+new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+};
+
+var key = new SymmetricSecurityKey (Encoding.UTF8.GetBytes(jwtSettnigs.Key));
+var creds = new SigningCredentials (key, SecurityAlgorithms.HmacSha256);
+
+var token = new JwtSecurityToken(
+issuer: jwtSettnigs.Issuer,
+audience: jwtSettnigs.Audience,
+claims: claims,
+expires: DateTime.UtcNow.AddMinutes(jwtSettnigs.DurationInMinutes),
+signingCredentials: creds
+);
+return new JwtSecurityTokenHandler().WriteToken (token);
+}
+}
+
+// JwtTokenGenerator registered in program.cs
+builder.Services.AddSingleton<JwtTokenGenerator>();
+
+//. Auth Controller //
+
+[Route("api/[controller]")]
+public class AuthController: Controller
+{
+private readonly JwtTokenGenerator tokenGenerator;
+public AuthController (JwtTokenGenerator_tokenGenerator)
+{
+tokenGenerator_tokenGenerator;
+}
+
+[HttpPost("Login")]
+public IActionResult Login([FromBody] LoginRequest request)
+{
+if (request.UserName = "Admin" && request.Password = "Admin@123")
+{
+var token = tokenGenerator.GenerateToken(request. UserName, "Admin");
+return Ok(new (Token = token});
+}
+return Unauthorized("Invalid Credentials");
+}
+}
+
+public class LoginRequest {
+
+public string UserName { get; set;}
+
+public string Password { get; set;}
+
+}
+
+
+// program //
+
+builder.Services.AddSwaggerGen (options =>
+{
+options.SwaggerDoc("v1", new () { Title "My API", Version = "v1" });
+
+options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+{
+Name = "Authorization",
+Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+Scheme = "Bearer",
+BearerFormat = "JWT",
+In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+Description = "Enter your JWT token below. For now Id & Password is Admin & Admin@123 resp."
+});
+
+options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+{
+{
+new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+{
+Reference = new Microsoft.OpenApi.Models. OpenApiReference
+{
+Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme, 
+Id = "Bearer"
+}
+},
+ new string[]{}
+}
+});
+
+});
+
+1. Authentication
+
+Step1
+
+Packages installed in API project Microsoft.AspNetCore.Authentication.JwtBearer version 8.0.0 System.IdentityModel.Tokens.Jwt version 8.0.0
+
+Step2
+
+Added JWT settings in appsettings.json
+
+Step3 Created class as JwtSettings in Settings folder under API project
+
+Step4 Registered JWT Authentication in program.cs file
+
+Step5 Created class as TokenGenerator in Services folder under API project
+
+Step6
+
+Registered TokenGenerator in program.cs file
+
+Step7 Created a controller to implement Login method to use Authentication
+
+Step8 Added JWT Authorization to swagger in program.cs file
